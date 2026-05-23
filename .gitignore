@@ -6,9 +6,11 @@ node_modules/
 .env.example
 
 # Local databases and state
-*.json
-!package.json
-!package-lock.json
+/dailyLimit.json
+/emailEngagement.json
+/emailStore.json
+/warmup.json
+
 
 # Temporary files and logs
 *.log
