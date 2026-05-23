@@ -53,9 +53,43 @@ const VIEWER_CACHE_MAX = 500; // Max entries — prevent unbounded growth
 
 function digitsOnly(v) { return String(v || "").replace(/\D/g, ""); }
 
+const REQUIRED_HEADERS = [
+  'User ID',
+  'Name',
+  'Email',
+  'Phone Number',
+  'Course Interested In',
+  'Role',
+  'Profile Status',
+  'Signed Up On',
+  'Last Login',
+  'Website Score',
+  'Engagement Band',
+  'Unique Page (list title of page)',
+  'Chat Interaction',
+  'createdAt',
+  'updatedAt',
+  'sent',
+  'wpscore',
+  'level',
+  'sentmail',
+  'emailScore',
+  'emailLevel'
+];
+
 async function loadSheet() {
   await doc.loadInfo();
-  return doc.sheetsByIndex[0];
+  const sheet = doc.sheetsByIndex[0];
+  try {
+    await sheet.loadHeaderRow();
+    if (sheet.headerValues.length < REQUIRED_HEADERS.length) {
+      console.log("📋 Appending missing columns to Google Sheet headers...");
+      await sheet.setHeaderRow(REQUIRED_HEADERS);
+    }
+  } catch (err) {
+    console.log("⚠️ Spreadsheet header check error:", err.message);
+  }
+  return sheet;
 }
 
 /* ─── EMAIL SET CACHE ─── */
