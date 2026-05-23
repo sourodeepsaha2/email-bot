@@ -26,9 +26,19 @@ const { JWT } = require("google-auth-library");
    Col 20 → emailLevel
 */
 
+function cleanPrivateKey(key) {
+  if (!key) return "";
+  let cleaned = String(key).trim();
+  if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || 
+      (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
+    cleaned = cleaned.slice(1, -1);
+  }
+  return cleaned.replace(/\\n/g, "\n");
+}
+
 const serviceAccountAuth = new JWT({
   email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-  key: String(process.env.GOOGLE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
+  key: cleanPrivateKey(process.env.GOOGLE_PRIVATE_KEY),
   scopes: ["https://www.googleapis.com/auth/spreadsheets"]
 });
 

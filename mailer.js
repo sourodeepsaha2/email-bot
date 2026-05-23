@@ -98,6 +98,16 @@ function getEffectiveLimit() {
    PRODUCTION SMTP TRANSPORTER
 ═══════════════════════════════════════════════════════════ */
 
+function cleanPrivateKey(key) {
+  if (!key) return "";
+  let cleaned = String(key).trim();
+  if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || 
+      (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
+    cleaned = cleaned.slice(1, -1);
+  }
+  return cleaned.replace(/\\n/g, "\n");
+}
+
 const transporter = nodemailer.createTransport({
 
   host  : process.env.SMTP_HOST || "smtp.gmail.com",
@@ -130,7 +140,7 @@ const transporter = nodemailer.createTransport({
   dkim: {
     domainName : process.env.DKIM_DOMAIN    || "chartersunion.com",
     keySelector: process.env.DKIM_SELECTOR  || "mail",
-    privateKey : process.env.DKIM_PRIVATE_KEY,
+    privateKey : cleanPrivateKey(process.env.DKIM_PRIVATE_KEY),
     skipFields : "message-id:date",
     cacheDir   : false
   },
